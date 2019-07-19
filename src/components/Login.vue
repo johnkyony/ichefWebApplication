@@ -109,6 +109,7 @@ const firebase = require('../firebaseConfig.js')
        },
        togglePasswordReset(){
          this.showForgotPassword = !this.showForgotPassword
+         this.showLoginForm = !this.showLoginForm
        },
 
       login(){
