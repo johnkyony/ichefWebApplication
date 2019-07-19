@@ -103,12 +103,12 @@ const firebase = require('../firebaseConfig.js')
           // errorMsg: ''
         }
       }, 
-    computed: {
+    // computed: {
     
-      loading () {
-        return this.$store.state.performingRequest
-      }
-    },
+    //   loading () {
+    //     return this.$store.state.performingRequest
+    //   }
+    // },
      methods: {
        toggleForm(){
          this.showLoginForm = !this.showLoginForm
