@@ -1,6 +1,6 @@
 <template>
     <div id="login">
-      <transition>
+      <transition name="fade">
         <div v-if="perfomingRequest" class="loading">
           <p>Loading ...</p>
         </div>
@@ -99,10 +99,16 @@ const firebase = require('../firebaseConfig.js')
           showLoginForm: true,
           showForgotPassword: false,
           passwordResetSuccess: false,
-          performingRequest: false,
-          errorMsg: ''
+          // perfomingRequest: false,
+          // errorMsg: ''
         }
       }, 
+    computed: {
+    
+      loading () {
+        return this.$store.state.performingRequest
+      }
+    },
      methods: {
        toggleForm(){
          this.showLoginForm = !this.showLoginForm
@@ -112,61 +118,70 @@ const firebase = require('../firebaseConfig.js')
          this.showLoginForm = !this.showLoginForm
        },
 
-      login(){
-        this.performingRequest = true
-         firebase.auth.signInWithEmailAndPassword(this.loginForm.email , this.loginForm.password)
-         .then(user =>{
-           this.$store.commit('setCurrentUser' , user.user)
-           this.$store.dispatch('fetchUserProfile')
-           this.performingRequest = false
-           this.$store.push('/dashboard')
-         })
-         .catch(err => {
-           console.log(err)
-           this.performingRequest = false
-           this.errorMsg = err.message
-         })
+       login(){
+      this.$store.dispatch('login' , {email: this.loginForm.email , password: this.loginForm.password})
+        // this.perfomingRequest = true
+        //  firebase.auth.signInWithEmailAndPassword(this.loginForm.email , this.loginForm.password)
+        //  .then(user =>{
+        //    this.$store.commit('setCurrentUser' , user.user)
+        //    this.$store.dispatch('fetchUserProfile')
+        //    this.perfomingRequest = false
+        //    this.$store.push('/dashboard')
+        //  })
+        //  .catch(err => {
+        //    console.log(err)
+        //    this.performingRequest = false
+        //    this.errorMsg = err.message
+        //  })
       }, 
       signup(){
-        this.performingRequest = true
-        firebase.auth.createUserWithEmailAndPassword(this.signupForm.email , this.signupForm.password)
-        .then(user => {
-          this.$store.commit('setCurrentUser' , user)
+       this.$store.dispatch('signup', {email: this.signupForm.email , password: this.signupForm.password})
+      //   this.perfomingRequest = true
+      //  await firebase.auth.createUserWithEmailAndPassword(this.signupForm.email , this.signupForm.password)
+      //   .then(user => {
+          // this.$store.commit('setCurrentUser' , user.user)
 
-          //create user object
-          firebase.usersCollection.doc(user.uid)
-          .set({
-            name: this.signupForm.name
-          })
-          .then(()=> {
-            this.$store.dispatch('fetchUserProfile')
-            this.performingRequest = false
-            this.$store.push('/dashboard')
-          })
-          .catch(err => {
-            console.log(err)
-            this.performingRequest = false
-          })
-        })
-        .catch(err => {
-          console.log(err)
-        })
+      //     //create user object
+      //     console.log('//user object \n ' + user)
+      //     console.log('//new user object \n' + user.user.uid)
+      //     firebase.usersCollection.doc(user.user.uid)
+      //     .set({
+      //       name: this.signupForm.name
+      //     })
+      //     .then(()=> {
+      //       this.$store.dispatch('fetchUserProfile')
+      //       this.perfomingRequest = false
+      //       this.$store.push('/dashboard')
+      //     })
+      //     .catch(err => {
+      //       console.log(err)
+      //       this.perfomingRequest = false
+      //     })
+      //   })
+      //   .catch(err => {
+      //     console.log(err)
+      //   })
       }
      },
      resetPassword(){
-       this.performingRequest = true 
+       this.$store.dispatch('resetPassword', {email: this.passwordForm.email })
+      .then(() => {
+        this.passwordResetSuccess = true
+        this.passwordForm.email = ''
+      })
+      //  this.perfomingRequest = true 
 
-       firebase.auth.sendPasswordResetEmail(this.passwordForm.email)
-       .then(() => {
-         this.performingRequest = false
-         this.passwordResetSuccess = true
-         this.passwordForm.email = ''
-       })
-       .catch(err => {
-         console.log(err)
-         this.performingRequest = false
-         this.errorMsg = err.message
-       })
+      //  firebase.auth.sendPasswordResetEmail(this.passwordForm.email)
+      //  .then(() => {
+      //    this.perfomingRequest = false
+      //    this.passwordResetSuccess = true
+      //    this.passwordForm.email = ''
+      //  })
+      //  .catch(err => {
+      //    console.log(err)
+      //    this.perfomingRequest = false
+      //    this.errorMsg = err.message
+      //  })
      }
         
     }
