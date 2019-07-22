@@ -81,6 +81,7 @@
 
 <script>
 const firebase = require('../firebaseConfig.js')
+import {mapState} from 'vuex'
     export default {
       data(){
         return {
@@ -103,12 +104,10 @@ const firebase = require('../firebaseConfig.js')
           // errorMsg: ''
         }
       }, 
-    // computed: {
+    computed: {
     
-    //   loading () {
-    //     return this.$store.state.performingRequest
-    //   }
-    // },
+     ...mapState(['perfomingRequest', ' errorMsg'])
+    },
      methods: {
        toggleForm(){
          this.showLoginForm = !this.showLoginForm
