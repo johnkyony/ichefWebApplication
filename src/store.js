@@ -35,18 +35,31 @@ export default new Vuex.Store({
       commit('setCurrentUser' , null)
       commit('setUserProfile' ,{})
     },
-    async fetchUserProfile({commit , state}){
-      try {
-        await  firebase.usersCollection.doc(state.currentUser.userId)
-        .get()
+    fetchUserProfile({commit , state}){
+      commit('toggleLoading' , true)
+      firebase.usersCollection.doc(state.currentUser.userId)
+      .get()
+      .then(res => {
         commit('setUserProfile' , res.data())
-        
-      } catch (err) {
+        commit('toggleLoading' , false)
+      })
+      .catch(err => {
         console.log(err.message)
         commit('toggleLoading' , false)
         commit('errorMessage' , err.message)
         
-      }
+      })
+      // try {
+      //   await  firebase.usersCollection.doc(state.currentUser.userId)
+      //   .get()
+      //   commit('setUserProfile' , res.data())
+        
+      // } catch (err) {
+      //   console.log(err.message)
+      //   commit('toggleLoading' , false)
+      //   commit('errorMessage' , err.message)
+        
+      // }
       
       // .then(res => {
       //   commit('setUserProfile' , res.data())

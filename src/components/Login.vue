@@ -83,6 +83,7 @@
 
 import {mapState} from 'vuex'
     export default {
+      name: 'dashboard',
       data(){
         return {
           loginForm: {
