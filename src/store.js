@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import { async } from 'q';
 import router from './router'
 const firebase = require('./firebaseConfig.js')
-import fireCurrentUser from 'firebase'
+
 
 Vue.use(Vuex)
 
@@ -37,7 +37,7 @@ export default new Vuex.Store({
     },
     async fetchUserProfile({commit , state}){
       try {
-        await  firebase.usersCollection.doc(state.currentuser.uid)
+        await  firebase.usersCollection.doc(state.currentUser.userId)
         .get()
         commit('setUserProfile' , res.data())
         
@@ -59,12 +59,21 @@ export default new Vuex.Store({
        try {
          commit('toggleLoading' , true)
          await firebase.auth.signInWithEmailAndPassword(payload.email ,payload.password)
-         let user = fireCurrentUser.auth().currentUser
-         console.log(user)
-         commit('setCurrentUser' , user)
-         await dispatch('fetchUserProfile')
-         commit('toggleLoading' , false)
-         router.push('/dashboard')
+         return new Promise((resolve , reject ) => {
+           firebase.auth.onAuthStateChanged((user) => {
+             if(user){
+              commit('setCurrentUser' , {userId: user.uid , email: user.email})
+              dispatch('fetchUserProfile')
+              commit('toggleLoading' , false)
+              router.push('/dashboard')
+              resolve(user.uid)
+             }else{
+              reject('user Is not logged in')
+             }
+
+           })
+         })
+         
        } catch (err) {
         console.log(err)
         commit('toggleLoading' , false)
@@ -88,16 +97,31 @@ export default new Vuex.Store({
 
     },
    async signup({commit , dispatch }, payload){
-      commit('toggleLoading' , true)
+     
       try {
+        commit('toggleLoading' , true)
         await  firebase.auth.createUserWithEmailAndPassword(payload.email , payload.password)
-       let user = fireCurrentUser.User
-         console.log(user)
-        commit('setCurrentUser' , user)
-        await dispatch('createNewUser', {userId: user.uid , name: payload.userName})
+        return new Promise((resolve , reject) => {
+          firebase.auth.onAuthStateChanged((user) => {
+            if(user){
+              commit('setCurrentUser' , {userId: user.uid , email: user.email})
+              dispatch('createNewUser' , {userId: user.uid , name: payload.name})
+              resolve(user.uid)
+            }else {
+              reject('User is not signed up')
+            }
+            
+          })
+        })
+      //  let user = firebase.currentUser
+      //     console.log('looking for user')
+      //    console.log(user.uid)
+      //   await commit('setCurrentUser' , {userId: user.uid , email: user.email})
+      //   await dispatch('createNewUser', {userId: user.uid , name: payload.userName})
 
         
       } catch (err) {
+        console.log('error message')
         console.log(err.message)
         commit('toggleLoading' , false)
         commit('errorMessage' , err.message)
@@ -108,9 +132,9 @@ export default new Vuex.Store({
     },
   async createNewUser({commit , dispatch }, payload){
      try {
-     await firebase.usersCollection.doc(payload.user.user.uid)
+     await firebase.usersCollection.doc(payload.userId)
      .set({
-      name: payload.signupForm.name
+      name: payload.name
     })
     await dispatch('fetchUserProfile')
     await commit('toggleLoading', false)
@@ -129,6 +153,7 @@ export default new Vuex.Store({
       try {
         commit('toggleLoading' , true)
         await firebase.auth.sendPasswordResetEmail(payload.email)
+        router.push('/login')
         commit('toggleLoading' , false )
       } catch (error) {
         commit('toggleLoading' , false)

@@ -17,10 +17,10 @@
             <form @submit.prevent v-if="showLoginForm">
               <h1>Welcome Back</h1>
               <label for="email1">Email</label>
-              <input type="text" placeholder="you@email.com" id="email1">
+              <input type="text" placeholder="you@email.com" id="email1" v-model.trim="loginForm.email">
 
               <label for="password1">Password</label>
-              <input type="password" placeholder="*****" id="password1" >
+              <input type="password" placeholder="*****" id="password1" v-model.trim="loginForm.password" >
 
               <button class="button" @click="login">Log In</button>
 
@@ -80,7 +80,7 @@
 </template>
 
 <script>
-const firebase = require('../firebaseConfig.js')
+
 import {mapState} from 'vuex'
     export default {
       data(){
@@ -119,6 +119,10 @@ import {mapState} from 'vuex'
 
        login(){
       this.$store.dispatch('login' , {email: this.loginForm.email , password: this.loginForm.password})
+      .then(() => {
+        this.loginForm.email = ''
+        this.loginForm.password = ''
+      })
         // this.perfomingRequest = true
         //  firebase.auth.signInWithEmailAndPassword(this.loginForm.email , this.loginForm.password)
         //  .then(user =>{
@@ -134,7 +138,12 @@ import {mapState} from 'vuex'
         //  })
       }, 
       signup(){
-       this.$store.dispatch('signup', {email: this.signupForm.email , password: this.signupForm.password})
+       this.$store.dispatch('signup', {email: this.signupForm.email , password: this.signupForm.password , name: this.signupForm.name})
+       .then(() => {
+         this.signupForm.email = ''
+         this.signupForm.password = ''
+         this.signupForm.name = ''
+       })
       //   this.perfomingRequest = true
       //  await firebase.auth.createUserWithEmailAndPassword(this.signupForm.email , this.signupForm.password)
       //   .then(user => {

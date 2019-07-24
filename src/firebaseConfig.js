@@ -30,6 +30,10 @@ const recipesCollection = db.collection('recipes')
 const commentsCollection = db.collection('comments')
 const likesCollection = db.collection('likes')
 
+
+// firebase auth user state change 
+
+
 export {
   db, 
   auth , 
