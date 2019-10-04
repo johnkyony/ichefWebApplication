@@ -184,20 +184,51 @@ export default new Vuex.Store({
       // })
     }, 
     async logout({commit , dispatch} , payload){
+      
       try {
+        commit('toggleLoading' , true)
         await firebase.auth.signOut()
-        await dispatch('clearData')
-        router.push('/login')
+        return new Promise((resolve , reject) => {
+          firebase.auth.onAuthStateChanged((user) => {
+            if(!user){
+              dispatch('clearData')
+              commit('toggleLoading' , false)
+              resolve(router.push('/login'))
+            } else{
+              reject('Logout unsuccessful')
+            }
+          })
+         
+        })
+        // dispatch('clearData')
+        // commit('toggleLoading' , false)
+        // router.push({'name' : 'Login'})
         
-      } catch (error) {
+      } catch (err) {
         commit('toggleLoading' , false)
         commit('errorMessage' , err.message)
         
       }
       
       
+    },
+    async createNewRecipe({commit , dispatch} , payload){
+      try {
+        commit('toggleLoading' , true)
+        await firebase.recipesCollection.add({
+          createdOn: payload.createdOn , 
+          content: payload.content , 
+          userId: payload.userId,
+          userName: payload.userName, 
+          comments: payload.comments,
+          likes: payload.likes
+        })
+        commit('toggleLoading' , false)
+      } catch (err) {
+        commit('toggleLoading' , false)
+        commit('errorMessage' , err.message)
+      }
     }
-
 
 
   }
