@@ -26,6 +26,7 @@ db.settings(settings)
 
 //firebase collections 
 const usersCollection = db.collection('users')
+const chefsCollection = db.collection('chefs')
 const recipesCollection = db.collection('recipes')
 const commentsCollection = db.collection('comments')
 const likesCollection = db.collection('likes')
@@ -39,6 +40,7 @@ export {
   auth , 
   currentUser,
   usersCollection,
+  chefsCollection,
   recipesCollection,
   commentsCollection,
   likesCollection

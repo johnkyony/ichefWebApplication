@@ -35,6 +35,15 @@ export default new Vuex.Store({
       commit('setCurrentUser' , null)
       commit('setUserProfile' ,{})
     },
+    fetchChefProfile(commit , state){
+      commit('toggleLoading' , true)
+      firebase.chefsCollection.doc(state.currentUser.userId)
+      .get()
+      .then(res => {
+        commit('setUserProfile' , res.data)
+        commit('toggleLoading' , false )
+      })
+    },
     fetchUserProfile({commit , state}){
       commit('toggleLoading' , true)
       firebase.usersCollection.doc(state.currentUser.userId)
@@ -75,7 +84,7 @@ export default new Vuex.Store({
          return new Promise((resolve , reject ) => {
            firebase.auth.onAuthStateChanged((user) => {
              if(user){
-              commit('setCurrentUser' , {userId: user.uid , email: user.email})
+              commit('setCurrentUser' , {userId: user.uid , email: user.email })
               dispatch('fetchUserProfile')
               commit('toggleLoading' , false)
               router.push('/dashboard')
@@ -109,6 +118,7 @@ export default new Vuex.Store({
       // })
 
     },
+    
    async signup({commit , dispatch }, payload){
      
       try {
@@ -117,8 +127,8 @@ export default new Vuex.Store({
         return new Promise((resolve , reject) => {
           firebase.auth.onAuthStateChanged((user) => {
             if(user){
-              commit('setCurrentUser' , {userId: user.uid , email: user.email})
-              dispatch('createNewUser' , {userId: user.uid , name: payload.name})
+              commit('setCurrentUser' , {userId: user.uid , email: user.email })
+              dispatch('createNewUser' , {userId: user.uid , name: payload.name  , role: "user"})
               resolve(user.uid)
             }else {
               reject('User is not signed up')
@@ -147,7 +157,9 @@ export default new Vuex.Store({
      try {
      await firebase.usersCollection.doc(payload.userId)
      .set({
-      name: payload.name
+      name: payload.name , 
+      email: payload.email,
+      role: payload.role
     })
     await dispatch('fetchUserProfile')
     await commit('toggleLoading', false)
@@ -225,6 +237,66 @@ export default new Vuex.Store({
         })
         commit('toggleLoading' , false)
       } catch (err) {
+        commit('toggleLoading' , false)
+        commit('errorMessage' , err.message)
+      }
+    },
+    async chefLogin({commit , dispatch} , payload){
+      try {
+        commit('toggleLoading' , true)
+        await firebase.auth.signInWithEmailAndPassword(payload.email , payload.password)
+        return new Promise((resolve , reject) => {
+          if(user){
+            commit('setCurrentUser' , {userId: user.uid , email: user.email , role: "chef"})
+            dispatch('fetchChefProfile')
+            commit('toggleLoading' , false)
+            router.push('/dashboard')
+            resolve(user.uid)
+          }else {
+            reject('User is not logged in')
+          }
+        })
+      } catch(err){
+        console.log(err)
+        commit('toggleLoading' , false)
+        commit('errorMessage' , err.message)
+      }
+    } , 
+    async chefSignUp({commit , dispatch} , payload){
+      try{
+        commit('toggleLoading' , true)
+        await firebase.auth.createUserWithEmailAndPassword(payload.email , payload.password)
+        return new Promise((resolve , reject) =>{
+          firebase.auth.onAuthStateChanged((user) => {
+            if(user){
+              commit('setCurrentUser' , {userId: user.uid , email: user.email})
+              dispatch('createNewChef' , {userId: user.uid , email: user.meail , role: "chef"})
+
+              resolve(user.uid)
+            }else{
+              reject('Chef is not registered')
+            }
+          })
+        })
+      }catch(err){
+        console.log('error message')
+        console.log(err.message)
+        commit('toggleLoading' , false)
+        commit('errorMessage' , err.message)
+      }
+    },
+    async createNewChef({commit , dispatch} , payload){
+      try{
+        await firebase.chefsCollection.doc(payload.userId)
+        .set({
+          name:payload.name,
+          email: payload.email,
+          role: payload.role
+        })
+        router.push('/dashboard')
+      }catch(err){
+        console.log('error message')
+        console.log(err.message)
         commit('toggleLoading' , false)
         commit('errorMessage' , err.message)
       }

@@ -8,14 +8,15 @@
         <section>
           <div class="col1">
             <h1>Ichef</h1>
-            <p>IChef is an application that allows users to access their favourite cooking recipes on their mobile devices with a single click
-              of a button. It gives users access to a list of prominent and reputable chefs around the world and their secret recipes 
-              and allowsusers to access these in exchange of a transactional fee.
+            <p>IChef is an application that allows chefs to create their favourite cooking recipes on their mobile devices with a single click
+              of a button. It gives food lovers access to a list of prominent and reputable chefs like you around the world your secret recipes.
+              and allows users to access these in exchange of a transactional fee.
+              that you shall receive.
             </p>
           </div>
           <div class="col2" :class="{ 'signup-form': !showLoginForm && !showForgotPassword }" >
             <form @submit.prevent v-if="showLoginForm">
-              <h1>Welcome Back</h1>
+              <h1>Welcome Back Chef</h1>
               <label for="email1">Email</label>
               <input type="text" placeholder="you@email.com" id="email1" v-model.trim="loginForm.email">
 
@@ -27,13 +28,12 @@
               <div class="extras">
                 <a @click="togglePasswordReset">Forgot Password</a>
                 <a @click="toggleForm"> Create an Account</a>
-                <a href="/chefLogin">Chef Login</a>
-               
+                <a href="/login">User Login</a>
               </div>
             </form>
 
             <form @submit.prevent v-if="!showLoginForm && !showForgotPassword" >
-              <h1>Get Started</h1>
+              <h1>Get Started As a Chef</h1>
 
               <label for="name">Name</label>
               <input v-model.trim="signupForm.name" type="text" placeholder="your name" id="name">
@@ -121,7 +121,7 @@ import {mapState} from 'vuex'
        },
 
        login(){
-      this.$store.dispatch('login' , {email: this.loginForm.email , password: this.loginForm.password})
+      this.$store.dispatch('chefLogin' , {email: this.loginForm.email , password: this.loginForm.password})
       .then(() => {
         this.loginForm.email = ''
         this.loginForm.password = ''
@@ -141,7 +141,7 @@ import {mapState} from 'vuex'
         //  })
       }, 
       signup(){
-       this.$store.dispatch('signup', {email: this.signupForm.email , password: this.signupForm.password , name: this.signupForm.name})
+       this.$store.dispatch('chefSignUp', {email: this.signupForm.email , password: this.signupForm.password , name: this.signupForm.name})
        .then(() => {
          this.signupForm.email = ''
          this.signupForm.password = ''

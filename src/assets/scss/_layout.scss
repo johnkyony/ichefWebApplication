@@ -78,6 +78,13 @@ header {
           padding-top: 10vh;
       }
   }
+  .chef-signup-form {
+    padding-top: 20vh;
+
+    @media screen and (max-width: 742px) {
+        padding-top: 10vh;
+    }
+}
   .col2 {
       h1 {
           margin-bottom: 2rem;

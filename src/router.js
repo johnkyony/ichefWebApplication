@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import firebase from 'firebase'
 
 import Login from '@/components/Login'
+import ChefLogin from '@/components/ChefLogin'
 import Dashboard from '@/components/Dashboard'
 import Settings from '@/components/Settings'
 
@@ -16,6 +17,11 @@ const router =  new Router({
     {
       path: '*',
       redirect:'/dashboard'
+    },
+    {
+      path: '/cheflogin',
+      name: 'chefLogin',
+      component: ChefLogin
     },
     {
       path: '/',
