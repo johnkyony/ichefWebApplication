@@ -121,7 +121,7 @@ import {mapState} from 'vuex'
        },
 
        login(){
-      this.$store.dispatch('login' , {email: this.loginForm.email , password: this.loginForm.password})
+      this.$store.dispatch('login' , {email: this.loginForm.email , password: this.loginForm.password , role: "user"})
       .then(() => {
         this.loginForm.email = ''
         this.loginForm.password = ''
@@ -141,7 +141,7 @@ import {mapState} from 'vuex'
         //  })
       }, 
       signup(){
-       this.$store.dispatch('signup', {email: this.signupForm.email , password: this.signupForm.password , name: this.signupForm.name})
+       this.$store.dispatch('signup', {email: this.signupForm.email , password: this.signupForm.password , name: this.signupForm.name , role: "user"})
        .then(() => {
          this.signupForm.email = ''
          this.signupForm.password = ''
