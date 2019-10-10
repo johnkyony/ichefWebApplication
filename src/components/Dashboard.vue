@@ -11,11 +11,9 @@
                     <h5>{{ userProfile.name }}</h5>
                     <p>Chef</p>
                     <div class="create-post">
-                        <p>Create a new recipe</p>
-                        <form @submit.prevent>
-                            <textarea v-model.trim="post.content"></textarea>
-                            <button @click="createRecipe" :disabled="post.content == ''" class="button">post</button>
-                        </form>
+                        
+                        <button @click="createRecipe"  class="button">Create a new recipe</button>
+                        
                     </div>
                 </div>
             </div>
